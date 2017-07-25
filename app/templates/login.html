@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <script type="text/javascript">
+        function set_openId(openIdVal,prov)
+        {
+            u=openIdVal.search('<username>')
+            if(u != -1)
+            {
+                //openid requires username
+                user=prompt('Enter your '+ prov + ' username: ')
+                openIdVal= openIdVal.substr(0,u) + user
+            }
+
+            form=document.forms['login'];
+            form.elements['openId'].value = openIdVal
+
+        }
+    </script>
+
+    <h1>Sign In</h1>
+    <form action="" method="post" name="login">
+        {{ form.hidden_tag() }}
+        <!-- form.hidden_tag will get replaced with a
+        hidden field that implements the CSRF prevention -->
+        <p>
+            Please enter your OpenID:<br/>
+            {{ form.openId(size=80) }}<br>
+            {% for error in form.openId.errors %}
+                <span style="color:red;">[{{ error }}]</span>
+            {% endfor %}<br>
+            |
+            {% for prov in providers %}
+                <a href="javascript:set_openId('{{ prov.url }}', '{{ prov.name }}');">
+                    {{ prov.name }}
+                </a> |
+            {% endfor %}
+        </p>
+        <p>
+            {{form.remember_me}} Remember Me
+        </p>
+        <p>
+            <input type="submit" value="Sign In">
+        </p>
+    </form>
+
+{% endblock %}
